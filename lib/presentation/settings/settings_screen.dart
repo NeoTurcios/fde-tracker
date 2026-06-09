@@ -72,43 +72,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Text('Tema', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 ),
                 const Divider(height: 1),
-                RadioListTile<ThemeModeOption>(
-                  title: const Text('Sistema'),
-                  subtitle: const Text('Usar configuracion del dispositivo'),
-                  value: ThemeModeOption.system,
-                  groupValue: current,
-                  onChanged: (v) {
-                    themeCubit.setFromOption(v!);
-                    Navigator.pop(ctx);
-                  },
-                  secondary: const Icon(Icons.brightness_auto_rounded),
-                ),
-                RadioListTile<ThemeModeOption>(
-                  title: const Text('Claro'),
-                  subtitle: const Text('Tema claro permanente'),
-                  value: ThemeModeOption.light,
-                  groupValue: current,
-                  onChanged: (v) {
-                    themeCubit.setFromOption(v!);
-                    Navigator.pop(ctx);
-                  },
-                  secondary: const Icon(Icons.light_mode_rounded),
-                ),
-                RadioListTile<ThemeModeOption>(
-                  title: const Text('Oscuro'),
-                  subtitle: const Text('Tema oscuro permanente'),
-                  value: ThemeModeOption.dark,
-                  groupValue: current,
-                  onChanged: (v) {
-                    themeCubit.setFromOption(v!);
-                    Navigator.pop(ctx);
-                  },
-                  secondary: const Icon(Icons.dark_mode_rounded),
-                ),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.system, 'Sistema', 'Usar configuracion del dispositivo', Icons.brightness_auto_rounded),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.light, 'Claro', 'Tema claro permanente', Icons.light_mode_rounded),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.dark, 'Oscuro', 'Tema oscuro permanente', Icons.dark_mode_rounded),
               ],
             ),
           ),
         );
+      },
+    );
+  }
+
+  Widget _themeOption(BuildContext ctx, ThemeCubit themeCubit, ThemeModeOption current, ThemeModeOption value, String title, String subtitle, IconData icon) {
+    final selected = current == value;
+    return ListTile(
+      leading: Icon(icon, color: selected ? AppTheme.primaryColor : null),
+      title: Text(title, style: TextStyle(fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
+      subtitle: Text(subtitle),
+      trailing: selected ? const Icon(Icons.check_rounded, color: AppTheme.primaryColor) : null,
+      onTap: () {
+        themeCubit.setFromOption(value);
+        Navigator.pop(ctx);
       },
     );
   }
