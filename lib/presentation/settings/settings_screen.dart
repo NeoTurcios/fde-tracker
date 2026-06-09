@@ -51,226 +51,264 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await historyRepo.setLimit(_cacheLimit);
   }
 
+  void _showThemePicker(BuildContext context) {
+    final themeCubit = context.read<ThemeCubit>();
+    final current = themeCubit.currentOption;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('Tema', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ),
+                const Divider(height: 1),
+                RadioListTile<ThemeModeOption>(
+                  title: const Text('Sistema'),
+                  subtitle: const Text('Usar configuracion del dispositivo'),
+                  value: ThemeModeOption.system,
+                  groupValue: current,
+                  onChanged: (v) {
+                    themeCubit.setFromOption(v!);
+                    Navigator.pop(ctx);
+                  },
+                  secondary: const Icon(Icons.brightness_auto_rounded),
+                ),
+                RadioListTile<ThemeModeOption>(
+                  title: const Text('Claro'),
+                  subtitle: const Text('Tema claro permanente'),
+                  value: ThemeModeOption.light,
+                  groupValue: current,
+                  onChanged: (v) {
+                    themeCubit.setFromOption(v!);
+                    Navigator.pop(ctx);
+                  },
+                  secondary: const Icon(Icons.light_mode_rounded),
+                ),
+                RadioListTile<ThemeModeOption>(
+                  title: const Text('Oscuro'),
+                  subtitle: const Text('Tema oscuro permanente'),
+                  value: ThemeModeOption.dark,
+                  groupValue: current,
+                  onChanged: (v) {
+                    themeCubit.setFromOption(v!);
+                    Navigator.pop(ctx);
+                  },
+                  secondary: const Icon(Icons.dark_mode_rounded),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final themeCubit = context.watch<ThemeCubit>();
+    final themeCubit = context.read<ThemeCubit>();
     final themeOption = themeCubit.currentOption;
 
+    final themeLabel = themeOption == ThemeModeOption.system
+        ? 'Sistema'
+        : themeOption == ThemeModeOption.light
+            ? 'Claro'
+            : 'Oscuro';
+
+    final themeIcon = themeOption == ThemeModeOption.system
+        ? Icons.brightness_auto_rounded
+        : themeOption == ThemeModeOption.light
+            ? Icons.light_mode_rounded
+            : Icons.dark_mode_rounded;
+
     return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            _buildSectionHeader('Apariencia'),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.palette_rounded, color: AppTheme.primaryColor),
-                    ),
-                    title: const Text('Tema'),
-                    subtitle: Text(themeOption.displayName),
-                    trailing: SegmentedButton<ThemeModeOption>(
-                      segments: ThemeModeOption.values.map((opt) {
-                        return ButtonSegment(
-                          value: opt,
-                          label: Text(
-                            opt == ThemeModeOption.system ? 'Auto' :
-                            opt == ThemeModeOption.light ? 'Claro' : 'Oscuro',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          icon: Icon(
-                            opt == ThemeModeOption.system ? Icons.brightness_auto_rounded :
-                            opt == ThemeModeOption.light ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                            size: 16,
-                          ),
-                        );
-                      }).toList(),
-                      selected: {themeOption},
-                      onSelectionChanged: (selected) {
-                        final option = selected.first;
-                        themeCubit.setFromOption(option);
-                      },
-                      showSelectedIcon: false,
-                    ),
-                  ),
-                ],
+      padding: const EdgeInsets.all(16),
+      children: [
+        _buildSectionHeader('Apariencia'),
+        Card(
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
               ),
+              child: Icon(themeIcon, color: AppTheme.primaryColor),
             ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Rastreo'),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.green.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.public_rounded, color: Colors.green),
-                    ),
-                    title: const Text('País predeterminado'),
-                    subtitle: Text('${_selectedCountry.flagEmoji} ${_selectedCountry.displayName}'),
-                    trailing: DropdownButton<Country>(
-                      value: _selectedCountry,
-                      underline: const SizedBox(),
-                      items: Country.values.map((c) {
-                        return DropdownMenuItem(
-                          value: c,
-                          child: Text('${c.flagEmoji} ${c.displayName}'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedCountry = value);
-                          _saveSettings();
-                        }
-                      },
-                    ),
+            title: const Text('Tema'),
+            subtitle: Text(themeLabel),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => _showThemePicker(context),
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Rastreo'),
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  SwitchListTile(
-                    secondary: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.infoColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.notifications_rounded, color: AppTheme.infoColor),
-                    ),
-                    title: const Text('Notificaciones'),
-                    subtitle: const Text('Alertas de cambios de estado'),
-                    value: _notificationsEnabled,
-                    onChanged: (value) {
-                      setState(() => _notificationsEnabled = value);
+                  child: const Icon(Icons.public_rounded, color: Colors.green),
+                ),
+                title: const Text('Pais predeterminado'),
+                subtitle: Text('${_selectedCountry.flagEmoji} ${_selectedCountry.displayName}'),
+                trailing: DropdownButton<Country>(
+                  value: _selectedCountry,
+                  underline: const SizedBox(),
+                  items: Country.values.map((c) {
+                    return DropdownMenuItem(value: c, child: Text('${c.flagEmoji} ${c.displayName}'));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _selectedCountry = value);
                       _saveSettings();
-                    },
-                  ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  SwitchListTile(
-                    secondary: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.warningColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.refresh_rounded, color: AppTheme.warningColor),
-                    ),
-                    title: const Text('Actualización automática'),
-                    subtitle: const Text('Refrescar estado al abrir la app'),
-                    value: _autoRefresh,
-                    onChanged: (value) {
-                      setState(() => _autoRefresh = value);
-                      _saveSettings();
-                    },
-                  ),
-                ],
+                    }
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Almacenamiento'),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.storage_rounded, color: Colors.blue),
-                    ),
-                    title: const Text('Límite de historial'),
-                    subtitle: Text('Guardar las últimas $_cacheLimit guías'),
-                    trailing: SizedBox(
-                      width: 120,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, size: 20),
-                            onPressed: _cacheLimit > AppConstants.minCacheLimit
-                                ? () {
-                                    setState(() => _cacheLimit -= 5);
-                                    _saveSettings();
-                                  }
-                                : null,
-                          ),
-                          Text('$_cacheLimit', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline, size: 20),
-                            onPressed: _cacheLimit < AppConstants.maxCacheLimit
-                                ? () {
-                                    setState(() => _cacheLimit += 5);
-                                    _saveSettings();
-                                  }
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              SwitchListTile(
+                secondary: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.infoColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.delete_rounded, color: Colors.red),
-                    ),
-                    title: const Text('Limpiar historial'),
-                    subtitle: const Text('Eliminar todas las guías guardadas'),
-                    trailing: TextButton.icon(
-                      onPressed: () => _confirmClearHistory(context),
-                      icon: const Icon(Icons.delete_sweep_rounded, size: 18),
-                      label: const Text('Limpiar'),
-                    ),
-                  ),
-                ],
+                  child: const Icon(Icons.notifications_rounded, color: AppTheme.infoColor),
+                ),
+                title: const Text('Notificaciones'),
+                subtitle: const Text('Alertas de cambios de estado'),
+                value: _notificationsEnabled,
+                onChanged: (value) {
+                  setState(() => _notificationsEnabled = value);
+                  _saveSettings();
+                },
               ),
-            ),
-            const SizedBox(height: 24),
-            _buildSectionHeader('Acerca de'),
-            Card(
-              child: Column(
-                children: [
-                  const ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppTheme.primaryColor,
-                      child: Text('FDE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ),
-                    title: Text('FDE Tracker', style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Versión ${AppConstants.appVersion}'),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              SwitchListTile(
+                secondary: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warningColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(Icons.info_outline_rounded, color: AppTheme.primaryColor),
-                    ),
-                    title: const Text('App no oficial'),
-                    subtitle: const Text('Los datos pertenecen a Forza Delivery Express'),
-                    trailing: const Icon(Icons.open_in_new_rounded, size: 18),
-                    onTap: () {},
-                  ),
-                ],
+                  child: const Icon(Icons.refresh_rounded, color: AppTheme.warningColor),
+                ),
+                title: const Text('Actualizacion automatica'),
+                subtitle: const Text('Refrescar estado al abrir la app'),
+                value: _autoRefresh,
+                onChanged: (value) {
+                  setState(() => _autoRefresh = value);
+                  _saveSettings();
+                },
               ),
-            ),
-            const SizedBox(height: 32),
-          ],
-        );
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Almacenamiento'),
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.storage_rounded, color: Colors.blue),
+                ),
+                title: const Text('Limite de historial'),
+                subtitle: Text('Guardar las ultimas $_cacheLimit guias'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      onPressed: _cacheLimit > AppConstants.minCacheLimit ? () {
+                        setState(() => _cacheLimit -= 5);
+                        _saveSettings();
+                      } : null,
+                    ),
+                    SizedBox(
+                      width: 32,
+                      child: Text('$_cacheLimit', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline, size: 20),
+                      onPressed: _cacheLimit < AppConstants.maxCacheLimit ? () {
+                        setState(() => _cacheLimit += 5);
+                        _saveSettings();
+                      } : null,
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.delete_rounded, color: Colors.red),
+                ),
+                title: const Text('Limpiar historial'),
+                subtitle: const Text('Eliminar todas las guias guardadas'),
+                onTap: () => _confirmClearHistory(context),
+                trailing: const Icon(Icons.chevron_right_rounded),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Acerca de'),
+        Card(
+          child: Column(
+            children: [
+              const ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: AppTheme.primaryColor,
+                  child: Text('FDE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+                title: Text('FDE Tracker', style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text('Version 1.0.0'),
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.info_outline_rounded, color: AppTheme.primaryColor),
+                ),
+                title: const Text('App no oficial'),
+                subtitle: const Text('Los datos pertenecen a Forza Delivery Express'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+      ],
+    );
   }
 
   Widget _buildSectionHeader(String title) {
@@ -293,12 +331,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Limpiar historial'),
-        content: const Text('¿Eliminar todo el historial de guías guardadas?'),
+        content: const Text('Eliminar todo el historial de guias guardadas?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancelar'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancelar')),
           TextButton(
             onPressed: () {
               context.read<HistoryRepository>().clear();

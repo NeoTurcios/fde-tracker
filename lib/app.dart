@@ -27,20 +27,12 @@ class FDEApp extends StatefulWidget {
 class _FDEAppState extends State<FDEApp> {
   int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    widget.themeCubit.addListener(_onThemeChanged);
+  void _goToSettings() {
+    setState(() => _currentIndex = 2);
   }
 
-  @override
-  void dispose() {
-    widget.themeCubit.removeListener(_onThemeChanged);
-    super.dispose();
-  }
-
-  void _onThemeChanged() {
-    setState(() {});
+  void _toggleTheme() {
+    widget.themeCubit.toggleTheme();
   }
 
   @override
@@ -51,14 +43,17 @@ class _FDEAppState extends State<FDEApp> {
         ChangeNotifierProvider.value(value: widget.themeCubit),
         ChangeNotifierProvider.value(value: widget.historyRepository),
       ],
-      child: Consumer<ThemeCubit>(
-        builder: (context, themeCubit, _) {
+      child: ValueListenableBuilder<ThemeMode>(
+        valueListenable: widget.themeCubit,
+        builder: (context, themeMode, _) {
+          final isDark = themeMode == ThemeMode.dark;
+
           return MaterialApp(
             title: 'FDE Tracker',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: themeCubit.value,
+            themeMode: themeMode,
             home: Scaffold(
               appBar: AppBar(
                 title: Row(
@@ -81,21 +76,13 @@ class _FDEAppState extends State<FDEApp> {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(
-                      themeCubit.value == ThemeMode.dark
-                          ? Icons.dark_mode_rounded
-                          : Icons.light_mode_rounded,
-                    ),
-                    onPressed: () {
-                      themeCubit.toggleTheme();
-                    },
+                    icon: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
+                    onPressed: _toggleTheme,
                     tooltip: 'Alternar tema',
                   ),
                   IconButton(
                     icon: const Icon(Icons.settings_rounded),
-                    onPressed: () {
-                      setState(() => _currentIndex = 2);
-                    },
+                    onPressed: _goToSettings,
                     tooltip: 'Ajustes',
                   ),
                 ],
