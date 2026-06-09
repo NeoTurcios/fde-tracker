@@ -150,8 +150,11 @@ class StatusColors {
       case 'in route':
       case 'en reparto':
         return AppTheme.infoColor;
-      case 'en bodega':
+      case 'en instalaciones':
       case 'at facility':
+      case 'en bodega':
+        return AppTheme.primaryLight;
+      case 'recibido por forza':
       case 'recibido':
       case 'received':
         return AppTheme.primaryColor;
