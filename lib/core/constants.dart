@@ -14,11 +14,6 @@ class AppConstants {
   static const String setNewDeliveryAddressPath = 'Tracking/SetNewDeliveryAddress';
 
   static const String unauthenticatedToken = 'user no logged in tracking';
-  static const String codApp = 'SIFDCAPIECOM230920192010';
-  static const String appVersion = '2.1.6.0-20240822';
-
-  static const String googleMapsApiKey = 'AIzaSyBLMW-yZQI4A_mnrDCugdzhMl1RPLjrJ4w';
-  static const String recaptchaSiteKey = '6Le0r_MUAAAAABvBAEIyuIBk4sSzAmPRcBqcCRNf';
 
   static const String prefsKeyThemeMode = 'theme_mode';
   static const String prefsKeyCacheLimit = 'cache_limit';
