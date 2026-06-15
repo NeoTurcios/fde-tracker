@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fde.tracker"
+    namespace = "solaris.gt"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.fde.tracker"
+        applicationId = "solaris.gt"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

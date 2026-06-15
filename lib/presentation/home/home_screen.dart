@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme.dart';
 import '../../core/utils.dart';
 import '../../data/repositories/history_repository.dart';
@@ -74,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Column(
         children: [
           const SizedBox(height: 60),
-          Icon(Icons.local_shipping_rounded, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
+          Icon(PhosphorIconsFill.truck, size: 80, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
           Text(
             'Rastrea tu envío',
@@ -132,15 +133,15 @@ class _HomeScreenState extends State<HomeScreen> {
             textInputAction: TextInputAction.search,
             textCapitalization: TextCapitalization.characters,
             style: const TextStyle(fontSize: 16, letterSpacing: 1),
-            decoration: InputDecoration(
-              hintText: 'Ej: FD34557216',
-              prefixIcon: const Icon(Icons.search_rounded),
+              decoration: InputDecoration(
+                hintText: 'Ej: FD34557216',
+                prefixIcon: const Icon(PhosphorIconsFill.magnifyingGlass),
               suffixIcon: _controller.text.isNotEmpty
                   ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.clear, size: 20),
+                          icon: const Icon(PhosphorIconsFill.x, size: 20),
                           onPressed: () {
                             _controller.clear();
                             _onTextChanged('');
@@ -149,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     )
-                  : IconButton(
-                      icon: const Icon(Icons.paste_rounded, size: 20),
+                    : IconButton(
+                      icon: const Icon(PhosphorIconsFill.clipboardText, size: 20),
                       onPressed: _pasteFromClipboard,
                       tooltip: 'Pegar',
                     ),
@@ -162,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 50,
             child: ElevatedButton.icon(
               onPressed: _isValid ? _track : null,
-              icon: const Icon(Icons.search_rounded),
+              icon: const Icon(PhosphorIconsFill.magnifyingGlass),
               label: const Text('Rastrear'),
             ),
           ),
@@ -182,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.history_rounded, size: 18, color: AppTheme.textSecondary),
+              Icon(PhosphorIconsFill.clock, size: 18, color: AppTheme.textSecondary),
               const SizedBox(width: 6),
               Text(
                 'Recientes',
@@ -196,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
             runSpacing: 8,
             children: history.take(10).map((entry) {
               return ActionChip(
-                avatar: Icon(Icons.local_shipping_rounded, size: 16,
+                avatar: Icon(PhosphorIconsFill.truck, size: 16,
                     color: entry.hasError ? AppTheme.errorColor : AppTheme.primaryColor),
                 label: Text(entry.formattedGuide, style: const TextStyle(fontSize: 13)),
                 onPressed: () => _loadFromHistory(entry.formattedGuide),

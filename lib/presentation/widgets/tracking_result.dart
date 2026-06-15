@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../data/models/tracking_response.dart';
@@ -36,7 +37,7 @@ class TrackingResultWidget extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.search_off_rounded, size: 64, color: AppTheme.errorColor.withValues(alpha: 0.5)),
+              Icon(PhosphorIconsFill.magnifyingGlassMinus, size: 64, color: AppTheme.errorColor.withValues(alpha: 0.5)),
               const SizedBox(height: 16),
               Text(
                 'No encontrado',
@@ -54,7 +55,7 @@ class TrackingResultWidget extends StatelessWidget {
               const SizedBox(height: 8),
               TextButton.icon(
                 onPressed: () => context.read<TrackingBloc>().add(ClearTrackingEvent()),
-                icon: const Icon(Icons.arrow_back_rounded),
+                icon: const Icon(PhosphorIconsFill.arrowLeft),
                 label: const Text('Intentar de nuevo'),
               ),
             ],
@@ -122,7 +123,7 @@ class TrackingResultWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    Icons.local_shipping_rounded,
+                    PhosphorIconsFill.truck,
                     color: statusColor,
                     size: 28,
                   ),
@@ -195,16 +196,16 @@ class TrackingResultWidget extends StatelessWidget {
             ),
             if (payload.deliveryEta.isNotEmpty) ...[
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.schedule_rounded, size: 16, color: AppTheme.textSecondary),
-                  const SizedBox(width: 6),
-                  Text(
-                    'ETA: ${payload.deliveryEta}',
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                  Row(
+                    children: [
+                      Icon(PhosphorIconsFill.clock, size: 16, color: AppTheme.textSecondary),
+                      const SizedBox(width: 6),
+                      Text(
+                        'ETA: ${payload.deliveryEta}',
+                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                      ),
+                    ],
                   ),
-                ],
-              ),
             ],
           ],
         ),
@@ -220,7 +221,7 @@ class TrackingResultWidget extends StatelessWidget {
         Expanded(
           child: _infoCard(
             context,
-            icon: Icons.person_outline_rounded,
+            icon: PhosphorIconsFill.user,
             label: 'Remitente',
             value: payload.senderName,
           ),
@@ -229,7 +230,7 @@ class TrackingResultWidget extends StatelessWidget {
         Expanded(
           child: _infoCard(
             context,
-            icon: Icons.person_pin_rounded,
+            icon: PhosphorIconsFill.userCircle,
             label: 'Destinatario',
             value: payload.receiverName,
           ),
@@ -284,7 +285,7 @@ class TrackingResultWidget extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.timeline_rounded, size: 18, color: AppTheme.textSecondary),
+                Icon(PhosphorIconsFill.list, size: 18, color: AppTheme.textSecondary),
                 const SizedBox(width: 6),
                 Text(
                   'Historial de rastreo',

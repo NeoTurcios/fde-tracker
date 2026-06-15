@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'core/theme.dart';
 import 'data/api/forza_api_client.dart';
@@ -65,7 +66,7 @@ class _FDEAppState extends State<FDEApp> {
                         color: AppTheme.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.local_shipping_rounded, color: AppTheme.primaryColor, size: 20),
+                      child: const Icon(PhosphorIconsFill.truck, color: AppTheme.primaryColor, size: 20),
                     ),
                     const SizedBox(width: 10),
                     const Text(
@@ -76,12 +77,12 @@ class _FDEAppState extends State<FDEApp> {
                 ),
                 actions: [
                   IconButton(
-                    icon: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
+                    icon: Icon(isDark ? PhosphorIconsFill.sun : PhosphorIconsFill.moon),
                     onPressed: _toggleTheme,
                     tooltip: 'Alternar tema',
                   ),
                   IconButton(
-                    icon: const Icon(Icons.settings_rounded),
+                    icon: const Icon(PhosphorIconsFill.gear),
                     onPressed: _goToSettings,
                     tooltip: 'Ajustes',
                   ),
@@ -102,18 +103,18 @@ class _FDEAppState extends State<FDEApp> {
                 },
                 destinations: const [
                   NavigationDestination(
-                    icon: Icon(Icons.search_rounded),
-                    selectedIcon: Icon(Icons.search_rounded),
+                    icon: Icon(PhosphorIconsFill.magnifyingGlass),
+                    selectedIcon: Icon(PhosphorIconsFill.magnifyingGlass),
                     label: 'Rastrear',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.history_rounded),
-                    selectedIcon: Icon(Icons.history_rounded),
+                    icon: Icon(PhosphorIconsFill.clock),
+                    selectedIcon: Icon(PhosphorIconsFill.clock),
                     label: 'Historial',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.settings_rounded),
-                    selectedIcon: Icon(Icons.settings_rounded),
+                    icon: Icon(PhosphorIconsFill.gear),
+                    selectedIcon: Icon(PhosphorIconsFill.gear),
                     label: 'Ajustes',
                   ),
                 ],

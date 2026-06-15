@@ -1,4 +1,4 @@
-package com.fde.tracker
+package solaris.gt
 
 import io.flutter.embedding.android.FlutterActivity
 

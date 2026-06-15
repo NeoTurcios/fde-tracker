@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme.dart';
 import '../../core/constants.dart';
@@ -24,7 +25,7 @@ class HistoryScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_rounded, size: 80,
+          Icon(PhosphorIconsFill.clock, size: 80,
               color: AppTheme.textSecondary.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
@@ -52,7 +53,7 @@ class HistoryScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Row(
             children: [
-              Icon(Icons.history_rounded, size: 20, color: AppTheme.textSecondary),
+              Icon(PhosphorIconsFill.clock, size: 20, color: AppTheme.textSecondary),
               const SizedBox(width: 8),
               Text(
                 'Historial',
@@ -65,7 +66,7 @@ class HistoryScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               IconButton(
-                icon: const Icon(Icons.delete_sweep_rounded, size: 20),
+                icon: const Icon(PhosphorIconsFill.trash, size: 20),
                 onPressed: list.isEmpty
                     ? null
                     : () => _confirmClear(context, historyRepo),
@@ -95,7 +96,7 @@ class HistoryScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    entry.hasError ? Icons.error_outline_rounded : Icons.local_shipping_rounded,
+                    entry.hasError ? PhosphorIconsFill.warningCircle : PhosphorIconsFill.truck,
                     color: statusColor,
                     size: 22,
                   ),
@@ -120,7 +121,7 @@ class HistoryScreen extends StatelessWidget {
                   ),
                 ),
                 trailing: IconButton(
-                  icon: const Icon(Icons.close_rounded, size: 18),
+                  icon: const Icon(PhosphorIconsFill.x, size: 18),
                   onPressed: () =>
                       historyRepo.remove(entry.guideSerie, entry.guideNumber),
                 ),

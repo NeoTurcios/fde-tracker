@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants.dart';
@@ -72,9 +73,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Text('Tema', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 ),
                 const Divider(height: 1),
-                _themeOption(ctx, themeCubit, current, ThemeModeOption.system, 'Sistema', 'Usar configuracion del dispositivo', Icons.brightness_auto_rounded),
-                _themeOption(ctx, themeCubit, current, ThemeModeOption.light, 'Claro', 'Tema claro permanente', Icons.light_mode_rounded),
-                _themeOption(ctx, themeCubit, current, ThemeModeOption.dark, 'Oscuro', 'Tema oscuro permanente', Icons.dark_mode_rounded),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.system, 'Sistema', 'Usar configuracion del dispositivo', PhosphorIconsFill.monitorPlay),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.light, 'Claro', 'Tema claro permanente', PhosphorIconsFill.sun),
+                _themeOption(ctx, themeCubit, current, ThemeModeOption.dark, 'Oscuro', 'Tema oscuro permanente', PhosphorIconsFill.moon),
               ],
             ),
           ),
@@ -89,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       leading: Icon(icon, color: selected ? AppTheme.primaryColor : null),
       title: Text(title, style: TextStyle(fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
       subtitle: Text(subtitle),
-      trailing: selected ? const Icon(Icons.check_rounded, color: AppTheme.primaryColor) : null,
+      trailing: selected ? const Icon(PhosphorIconsFill.check, color: AppTheme.primaryColor) : null,
       onTap: () {
         themeCubit.setFromOption(value);
         Navigator.pop(ctx);
@@ -109,10 +110,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             : 'Oscuro';
 
     final themeIcon = themeOption == ThemeModeOption.system
-        ? Icons.brightness_auto_rounded
+        ? PhosphorIconsFill.monitorPlay
         : themeOption == ThemeModeOption.light
-            ? Icons.light_mode_rounded
-            : Icons.dark_mode_rounded;
+            ? PhosphorIconsFill.sun
+            : PhosphorIconsFill.moon;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -130,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             title: const Text('Tema'),
             subtitle: Text(themeLabel),
-            trailing: const Icon(Icons.chevron_right_rounded),
+            trailing: const Icon(PhosphorIconsFill.caretRight),
             onTap: () => _showThemePicker(context),
           ),
         ),
@@ -146,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.public_rounded, color: Colors.green),
+                  child: const Icon(PhosphorIconsFill.globe, color: Colors.green),
                 ),
                 title: const Text('Pais predeterminado'),
                 subtitle: Text('${_selectedCountry.flagEmoji} ${_selectedCountry.displayName}'),
@@ -172,7 +173,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: AppTheme.infoColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.notifications_rounded, color: AppTheme.infoColor),
+                  child: const Icon(PhosphorIconsFill.bell, color: AppTheme.infoColor),
                 ),
                 title: const Text('Notificaciones'),
                 subtitle: const Text('Alertas de cambios de estado'),
@@ -190,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: AppTheme.warningColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.refresh_rounded, color: AppTheme.warningColor),
+                  child: const Icon(PhosphorIconsFill.arrowClockwise, color: AppTheme.warningColor),
                 ),
                 title: const Text('Actualizacion automatica'),
                 subtitle: const Text('Refrescar estado al abrir la app'),
@@ -215,7 +216,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.storage_rounded, color: Colors.blue),
+                  child: const Icon(PhosphorIconsFill.database, color: Colors.blue),
                 ),
                 title: const Text('Limite de historial'),
                 subtitle: Text('Guardar las ultimas $_cacheLimit guias'),
@@ -223,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove_circle_outline, size: 20),
+                      icon: const Icon(PhosphorIconsFill.minusCircle, size: 20),
                       onPressed: _cacheLimit > AppConstants.minCacheLimit ? () {
                         setState(() => _cacheLimit -= 5);
                         _saveSettings();
@@ -234,7 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text('$_cacheLimit', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add_circle_outline, size: 20),
+                      icon: const Icon(PhosphorIconsFill.plusCircle, size: 20),
                       onPressed: _cacheLimit < AppConstants.maxCacheLimit ? () {
                         setState(() => _cacheLimit += 5);
                         _saveSettings();
@@ -251,12 +252,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.delete_rounded, color: Colors.red),
+                  child: const Icon(PhosphorIconsFill.trash, color: Colors.red),
                 ),
                 title: const Text('Limpiar historial'),
                 subtitle: const Text('Eliminar todas las guias guardadas'),
                 onTap: () => _confirmClearHistory(context),
-                trailing: const Icon(Icons.chevron_right_rounded),
+            trailing: const Icon(PhosphorIconsFill.caretRight),
               ),
             ],
           ),
@@ -282,10 +283,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: AppTheme.primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.info_outline_rounded, color: AppTheme.primaryColor),
+                  child: const Icon(PhosphorIconsFill.info, color: AppTheme.primaryColor),
                 ),
                 title: const Text('App no oficial'),
                 subtitle: const Text('Los datos pertenecen a Forza Delivery Express'),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildSectionHeader('Legal'),
+        Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(PhosphorIconsFill.shieldCheck, color: AppTheme.primaryColor),
+                ),
+                title: const Text('Licencia'),
+                subtitle: const Text('Software propietario - Todos los derechos reservados'),
+                trailing: const Icon(PhosphorIconsFill.caretRight),
+                onTap: () => _showLicenseDialog(context),
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(PhosphorIconsFill.truck, color: Colors.orange),
+                ),
+                title: const Text('Fuente de datos'),
+                subtitle: const Text('Forza Delivery Express (no afiliado)'),
+              ),
+              const Divider(height: 1, indent: 16, endIndent: 16),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(PhosphorIconsFill.code, color: Colors.blue),
+                ),
+                title: const Text('Licencias de terceros'),
+                subtitle: const Text('Ver licencias de paquetes Flutter'),
+                trailing: const Icon(PhosphorIconsFill.caretRight),
+                onTap: () => _showThirdPartyLicenses(context),
               ),
             ],
           ),
@@ -326,6 +377,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: const Text('Limpiar', style: TextStyle(color: AppTheme.errorColor)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showLicenseDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Licencia de uso'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'FDE Tracker - Software propietario\n\n'
+            'Copyright © 2024-2025 Solaris GT\n'
+            'Todos los derechos reservados.\n\n'
+            'Esta aplicación es de uso privado y no está '
+            'autorizada su distribución, modificación, '
+            'ingeniería inversa o uso comercial sin '
+            'autorización expresa por escrito.\n\n'
+            'Esta app no está afiliada, asociada ni '
+            'respaldada por Forza Delivery Express. '
+            'Los datos de rastreo pertenecen a sus '
+            'respectivos propietarios.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cerrar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showThirdPartyLicenses(BuildContext context) {
+    showLicensePage(
+      context: context,
+      applicationName: 'FDE Tracker',
+      applicationVersion: '1.0.0',
+      applicationIcon: const CircleAvatar(
+        backgroundColor: AppTheme.primaryColor,
+        child: Text('FDE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
