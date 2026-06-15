@@ -69,18 +69,6 @@ jobs:
       - name: Build signed AAB
         run: flutter build appbundle --release
 
-      - name: Sign AAB with jarsigner
-        run: |
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore ${{ github.workspace }}/neopunto.jks \
-            -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-            -keypass ${{ secrets.KEY_PASSWORD }} \
-            build/app/outputs/bundle/release/app-release.aab \
-            ${{ secrets.KEY_ALIAS }}
-
-      - name: Verify signed AAB
-        run: jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab
-
       - name: Upload signed AAB artifact
         uses: actions/upload-artifact@v4
         with:
