@@ -1,10 +1,15 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
+import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../core/utils.dart';
 import '../../data/repositories/history_repository.dart';
+import '../../data/repositories/query_points_repository.dart';
+import '../../data/services/rewarded_ad_service.dart';
 import '../blocs/tracking_bloc.dart';
 import '../widgets/tracking_result.dart';
 
@@ -19,11 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _isValid = false;
+  Timer? _cooldownTimer;
 
   @override
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _cooldownTimer?.cancel();
     super.dispose();
   }
 
@@ -37,8 +44,210 @@ class _HomeScreenState extends State<HomeScreen> {
     final text = _controller.text.trim();
     if (!_isValid) return;
 
+    final pointsRepo = context.read<QueryPointsRepository>();
+
+    if (pointsRepo.queryCooldownRemaining > 0) {
+      _startCooldownTimer();
+      return;
+    }
+
+    if (!pointsRepo.canAffordTrack) {
+      _showAdRequiredSheet();
+      return;
+    }
+
     _focusNode.unfocus();
+    pointsRepo.deduct();
+    pointsRepo.markQuery();
+    _startCooldownTimer();
     context.read<TrackingBloc>().add(TrackPackageEvent(text));
+  }
+
+  void _startCooldownTimer() {
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final repo = context.read<QueryPointsRepository>();
+      if (repo.queryCooldownRemaining <= 0) {
+        _cooldownTimer?.cancel();
+      }
+      setState(() {});
+    });
+  }
+
+  void _showAdRequiredSheet() {
+    final adService = context.read<RewardedAdService>();
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        String statusMessage = '';
+        bool isLoading = false;
+
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final pointsRepo = context.read<QueryPointsRepository>();
+            final canWatch = pointsRepo.canWatchAd;
+            final remaining = pointsRepo.remainingDailyAds;
+            final adCooldown = pointsRepo.adCooldownRemaining;
+
+            void loadAndShowAd() {
+              setSheetState(() {
+                isLoading = true;
+                statusMessage = 'Cargando anuncio...';
+              });
+
+              adService.loadAd(
+                primaryAdUnitId: AppConstants.adMobRewardedInterstitialId,
+                fallbackAdUnitId: AppConstants.adMobRewardedVideoId,
+                onStatus: (status) {
+                  if (!context.mounted) return;
+                  switch (status) {
+                    case RewardedAdStatus.loading:
+                      setSheetState(() {
+                        isLoading = true;
+                        statusMessage = 'Cargando anuncio...';
+                      });
+                    case RewardedAdStatus.ready:
+                      setSheetState(() {
+                        statusMessage = 'Mostrando anuncio...';
+                      });
+                      adService.showAd(
+                        onStatus: (showStatus) {
+                          if (!context.mounted) return;
+                          switch (showStatus) {
+                            case RewardedAdStatus.rewarded:
+                              final repo = context.read<QueryPointsRepository>();
+                              repo.markAdWatched();
+                              repo.add(AppConstants.pointsPerAd);
+                              Navigator.pop(ctx);
+                              _track();
+                            case RewardedAdStatus.dismissed:
+                              setSheetState(() {
+                                isLoading = false;
+                                statusMessage = 'Debes ver el anuncio completo para obtener consultas.';
+                              });
+                            case RewardedAdStatus.failed:
+                              setSheetState(() {
+                                isLoading = false;
+                                statusMessage = 'Error al mostrar el anuncio. Intenta de nuevo.';
+                              });
+                            default:
+                              break;
+                          }
+                        },
+                      );
+                    case RewardedAdStatus.failed:
+                      setSheetState(() {
+                        isLoading = false;
+                        statusMessage = 'No hay anuncios disponibles. Intenta más tarde.';
+                      });
+                    default:
+                      break;
+                  }
+                },
+              );
+            }
+
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: remaining > 0
+                            ? AppTheme.warningColor.withValues(alpha: 0.1)
+                            : AppTheme.errorColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        remaining > 0 ? PhosphorIconsFill.coin : PhosphorIconsFill.xCircle,
+                        size: 40,
+                        color: remaining > 0 ? AppTheme.warningColor : AppTheme.errorColor,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      remaining > 0 ? 'Sin consultas disponibles' : 'Límite diario alcanzado',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      remaining > 0
+                          ? 'Mira un anuncio y obtén ${AppConstants.pointsPerAd} consultas adicionales.'
+                          : 'Has visto $remaining anuncios hoy. Vuelve mañana para más consultas.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Anuncios hoy: $remaining/${AppConstants.maxDailyAds}',
+                      style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                    ),
+                    if (adCooldown > 0 && remaining > 0) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Espera $adCooldown s para ver otro anuncio',
+                        style: const TextStyle(color: AppTheme.warningColor, fontSize: 12),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    if (statusMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Text(
+                          statusMessage,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: statusMessage.contains('Debes') || statusMessage.contains('Error') || statusMessage.contains('No hay')
+                                ? AppTheme.errorColor
+                                : AppTheme.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    if (remaining > 0)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: isLoading || !canWatch ? null : loadAndShowAd,
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(PhosphorIconsFill.play),
+                          label: Text(
+                            !canWatch && adCooldown > 0
+                                ? 'Espera $adCooldown s'
+                                : isLoading
+                                    ? 'Cargando...'
+                                    : 'Ver anuncio',
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: isLoading ? null : () => Navigator.pop(ctx),
+                      child: const Text('Cancelar'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _pasteFromClipboard() async {
@@ -158,14 +367,22 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton.icon(
-              onPressed: _isValid ? _track : null,
-              icon: const Icon(PhosphorIconsFill.magnifyingGlass),
-              label: const Text('Rastrear'),
-            ),
+          Consumer<QueryPointsRepository>(
+            builder: (context, repo, _) {
+              final cooldown = repo.queryCooldownRemaining;
+              final canPress = _isValid && cooldown <= 0;
+              return SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: canPress ? _track : null,
+                  icon: const Icon(PhosphorIconsFill.magnifyingGlass),
+                  label: Text(
+                    cooldown > 0 ? 'Esperar $cooldown s' : 'Rastrear',
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

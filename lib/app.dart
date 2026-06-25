@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'core/theme.dart';
 import 'data/api/forza_api_client.dart';
 import 'data/repositories/history_repository.dart';
+import 'data/repositories/query_points_repository.dart';
+import 'data/services/rewarded_ad_service.dart';
 import 'presentation/blocs/tracking_bloc.dart';
 import 'presentation/blocs/theme_cubit.dart';
 import 'presentation/home/home_screen.dart';
@@ -14,11 +16,15 @@ import 'presentation/settings/settings_screen.dart';
 class FDEApp extends StatefulWidget {
   final HistoryRepository historyRepository;
   final ThemeCubit themeCubit;
+  final QueryPointsRepository queryPointsRepository;
+  final RewardedAdService rewardedAdService;
 
   const FDEApp({
     super.key,
     required this.historyRepository,
     required this.themeCubit,
+    required this.queryPointsRepository,
+    required this.rewardedAdService,
   });
 
   @override
@@ -43,6 +49,8 @@ class _FDEAppState extends State<FDEApp> {
         BlocProvider(create: (_) => TrackingBloc(apiClient: ForzaApiClient())),
         ChangeNotifierProvider.value(value: widget.themeCubit),
         ChangeNotifierProvider.value(value: widget.historyRepository),
+        ChangeNotifierProvider.value(value: widget.queryPointsRepository),
+        Provider.value(value: widget.rewardedAdService),
       ],
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: widget.themeCubit,
@@ -76,6 +84,21 @@ class _FDEAppState extends State<FDEApp> {
                   ],
                 ),
                 actions: [
+                  Consumer<QueryPointsRepository>(
+                    builder: (context, repo, _) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Badge(
+                          label: Text('${repo.balance}'),
+                          child: IconButton(
+                            icon: const Icon(PhosphorIconsFill.coin),
+                            tooltip: 'Consultas restantes',
+                            onPressed: () => _goToSettings(),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   IconButton(
                     icon: Icon(isDark ? PhosphorIconsFill.sun : PhosphorIconsFill.moon),
                     onPressed: _toggleTheme,

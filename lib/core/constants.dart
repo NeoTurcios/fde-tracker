@@ -21,6 +21,22 @@ class AppConstants {
   static const String prefsKeyNotificationsEnabled = 'notifications_enabled';
   static const String prefsKeyAutoRefresh = 'auto_refresh';
   static const String prefsKeyRefreshInterval = 'refresh_interval';
+  static const String prefsKeyQueryBalance = 'query_balance';
+
+  static const int welcomePoints = 1;
+  static const int pointsPerAd = 3;
+  static const int costPerTrack = 1;
+
+  static const String adMobAppId = 'ca-app-pub-8751029864651316~4611867619';
+  static const String adMobRewardedInterstitialId = 'ca-app-pub-8751029864651316/1795457656';
+  static const String adMobRewardedVideoId = 'ca-app-pub-8751029864651316/9841468637';
+
+  static const int maxDailyAds = 6;
+  static const int adCooldownSeconds = 15;
+  static const int queryCooldownSeconds = 5;
+
+  static const String prefsKeyDailyAdCount = 'daily_ad_count';
+  static const String prefsKeyLastAdDate = 'last_ad_date';
 
   static const int defaultCacheLimit = 20;
   static const int maxCacheLimit = 100;
@@ -51,14 +67,6 @@ extension CountryExtension on Country {
     }
   }
 
-  String get flagEmoji {
-    switch (this) {
-      case Country.guatemala:
-        return '🇬🇹';
-      case Country.honduras:
-        return '🇭🇳';
-    }
-  }
 }
 
 enum ThemeModeOption { system, light, dark }

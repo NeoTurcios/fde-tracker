@@ -1,7 +1,7 @@
 name: tracker
 description: "FDE Tracker - Rastreador de guías Forza Delivery"
 publish_to: 'none'
-version: 7.1.0+21
+version: 7.2.0+22
 
 environment:
   sdk: ^3.12.1
@@ -23,6 +23,7 @@ dependencies:
   permission_handler: ^11.3.1
   provider: ^6.1.5
   phosphoricons_flutter: ^1.0.0
+  google_mobile_ads: ^5.2.0
 
 dev_dependencies:
   flutter_test:

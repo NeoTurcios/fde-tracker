@@ -13,13 +13,11 @@ class ThemeCubit extends ValueNotifier<ThemeMode> {
   void toggleTheme() {
     switch (value) {
       case ThemeMode.system:
+      case ThemeMode.light:
         value = ThemeMode.dark;
         break;
       case ThemeMode.dark:
         value = ThemeMode.light;
-        break;
-      case ThemeMode.light:
-        value = ThemeMode.system;
         break;
     }
   }

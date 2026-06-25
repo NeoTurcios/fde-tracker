@@ -150,12 +150,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: const Icon(PhosphorIconsFill.globe, color: Colors.green),
                 ),
                 title: const Text('Pais predeterminado'),
-                subtitle: Text('${_selectedCountry.flagEmoji} ${_selectedCountry.displayName}'),
+                subtitle: Text(_selectedCountry.displayName),
                 trailing: DropdownButton<Country>(
                   value: _selectedCountry,
                   underline: const SizedBox(),
                   items: Country.values.map((c) {
-                    return DropdownMenuItem(value: c, child: Text('${c.flagEmoji} ${c.displayName}'));
+                    return DropdownMenuItem(value: c, child: Text(c.displayName));
                   }).toList(),
                   onChanged: (value) {
                     if (value != null) {

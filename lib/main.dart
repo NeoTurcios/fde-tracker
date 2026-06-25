@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/constants.dart';
 import 'data/repositories/history_repository.dart';
+import 'data/repositories/query_points_repository.dart';
+import 'data/services/rewarded_ad_service.dart';
 import 'presentation/blocs/theme_cubit.dart';
 import 'app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  MobileAds.instance.initialize();
+
   final historyRepository = HistoryRepository();
   await historyRepository.load();
+
+  final queryPointsRepository = QueryPointsRepository();
+  await queryPointsRepository.load();
+
+  final rewardedAdService = RewardedAdService();
 
   final prefs = await SharedPreferences.getInstance();
   final themeCubit = ThemeCubit();
@@ -45,5 +55,7 @@ void main() async {
   runApp(FDEApp(
     historyRepository: historyRepository,
     themeCubit: themeCubit,
+    queryPointsRepository: queryPointsRepository,
+    rewardedAdService: rewardedAdService,
   ));
 }
