@@ -11,7 +11,11 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  MobileAds.instance.initialize();
+  try {
+    await MobileAds.instance.initialize();
+  } catch (_) {
+    // AdMob initialization failed — ads won't work but app should not crash
+  }
 
   final historyRepository = HistoryRepository();
   await historyRepository.load();
