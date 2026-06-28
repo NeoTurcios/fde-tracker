@@ -110,6 +110,11 @@ class TrackingResultWidget extends StatelessWidget {
     final statusColor = StatusColors.getColor(payload.statusTrackingTitle);
 
     return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: statusColor.withValues(alpha: 0.25), width: 1.5),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -153,10 +158,10 @@ class TrackingResultWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               decoration: BoxDecoration(
-                color: statusColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
+                color: statusColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
@@ -168,7 +173,7 @@ class TrackingResultWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +187,7 @@ class TrackingResultWidget extends StatelessWidget {
                           ),
                         ),
                         if (payload.statusTrackingDescription.isNotEmpty) ...[
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           Text(
                             payload.statusTrackingDescription,
                             style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
@@ -196,16 +201,16 @@ class TrackingResultWidget extends StatelessWidget {
             ),
             if (payload.deliveryEta.isNotEmpty) ...[
               const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Icon(PhosphorIconsFill.clock, size: 16, color: AppTheme.textSecondary),
-                      const SizedBox(width: 6),
-                      Text(
-                        'ETA: ${payload.deliveryEta}',
-                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
-                      ),
-                    ],
+              Row(
+                children: [
+                  Icon(PhosphorIconsFill.clock, size: 16, color: AppTheme.textSecondary),
+                  const SizedBox(width: 6),
+                  Text(
+                    'ETA: ${payload.deliveryEta}',
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                   ),
+                ],
+              ),
             ],
           ],
         ),

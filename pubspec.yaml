@@ -1,7 +1,7 @@
 name: tracker
 description: "FDE Tracker - Rastreador de guías Forza Delivery"
 publish_to: 'none'
-version: 7.2.1+23
+version: 7.3.0+24
 
 environment:
   sdk: ^3.12.1
