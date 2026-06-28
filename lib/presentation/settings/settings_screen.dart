@@ -15,7 +15,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late int _cacheLimit;
+  int _cacheLimit = AppConstants.defaultCacheLimit;
   bool _notificationsEnabled = true;
   bool _autoRefresh = false;
   int _refreshInterval = 30;
