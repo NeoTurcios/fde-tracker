@@ -28,6 +28,12 @@ android {
         multiDexEnabled = true
     }
 
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
@@ -42,6 +48,9 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
+            minifyEnabled = false
+            shrinkResources = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }
